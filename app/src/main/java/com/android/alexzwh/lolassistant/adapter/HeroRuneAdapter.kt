@@ -21,7 +21,7 @@ class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesD
 		// 主符文
 		val mainRv = helper.getView<RecyclerView>(R.id.main_rune_rv)
 		val mainAdapter = RuneItemAdapter(item.mainList)
-		mainAdapter.onItemChildClickListener = OnItemChildClickListener { adapter, view, position ->
+		mainAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
 			ToastUtils.showLong(item.mainList!![position].description.replace("%", "%%"))
 		}
 		mainRv.adapter = mainAdapter
@@ -60,7 +60,7 @@ class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesD
 		// 副符文
 		val secondaryRv = helper.getView<RecyclerView>(R.id.secondary_rune_rv)
 		val secondaryAdapter = RuneItemAdapter(item.secondaryList)
-		secondaryAdapter.onItemChildClickListener = OnItemChildClickListener { adapter, view, position ->
+		secondaryAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
 			ToastUtils.showShort(item.secondaryList!![position].description.replace("%", "%%"))
 		}
 		secondaryRv.adapter = secondaryAdapter
