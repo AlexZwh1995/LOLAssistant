@@ -10,8 +10,8 @@ import com.chad.library.adapter.base.BaseViewHolder
 
 /**
  * User: zhongweihuan
- * Date: 2018/9/6
- * Description:
+ * Date: 2019/1/1
+ * Description: 英雄列表适配器
  */
 class MainHeroAdapter(data: MutableList<Hero>?) : BaseQuickAdapter<Hero, BaseViewHolder>(R.layout.item_main_hero, data) {
 	override fun convert(helper: BaseViewHolder, item: Hero) {

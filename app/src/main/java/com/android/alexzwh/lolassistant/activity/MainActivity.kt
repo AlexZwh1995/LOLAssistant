@@ -22,6 +22,11 @@ import java.text.Collator
 import java.util.*
 import kotlin.concurrent.thread
 
+/**
+ * User: zhongweihuan
+ * Date: 2019/1/1
+ * Description: 主界面（英雄列表）
+ */
 class MainActivity : AppCompatActivity() {
 	private val msg_finish = 0
 	val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
@@ -100,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 		}
 		mFilterHeroList.clear()
 		mAllHeroList.forEach {
-			if (it.nickname.contains(keyword!!)) {
+			if (it.nickname.contains(keyword)) {
 				mFilterHeroList.add(it)
 			}
 		}

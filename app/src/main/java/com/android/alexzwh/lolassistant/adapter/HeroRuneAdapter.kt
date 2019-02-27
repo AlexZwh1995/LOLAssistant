@@ -11,8 +11,8 @@ import com.chad.library.adapter.base.BaseViewHolder
 
 /**
  * User: zhongweihuan
- * Date: 2018/9/9
- * Description:
+ * Date: 2019/1/1
+ * Description: 英雄符文页适配器
  */
 class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesDetail, BaseViewHolder>(R.layout.item_hero_rune, data) {
 	override fun convert(helper: BaseViewHolder, item: RunesDetail) {

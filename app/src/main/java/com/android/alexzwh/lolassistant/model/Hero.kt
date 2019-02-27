@@ -4,7 +4,7 @@ import java.io.Serializable
 
 /**
  * User: zhongweihuan
- * Date: 2018/9/8
- * Description:
+ * Date: 2019/1/1
+ * Description: 英雄Bean
  */
-data class Hero(val name : String, val nickname : String, val positions : MutableList<String>) : Serializable
+data class Hero(val name: String, val nickname: String, val positions: MutableList<String>) : Serializable

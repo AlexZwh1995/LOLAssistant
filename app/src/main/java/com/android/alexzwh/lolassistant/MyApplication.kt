@@ -5,8 +5,8 @@ import com.blankj.utilcode.util.Utils
 
 /**
  * User: zhongweihuan
- * Date: 2018/3/24
- * Description:
+ * Date: 2019/1/1
+ * Description: 自定义Application
  */
 class MyApplication : Application() {
 	override fun onCreate() {

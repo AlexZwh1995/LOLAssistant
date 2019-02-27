@@ -5,8 +5,8 @@ import org.jsoup.nodes.Element
 
 /**
  * User: zhongweihuan
- * Date: 2018/9/8
- * Description:
+ * Date: 2019/1/1
+ * Description: 通用工具类
  */
 object CommonUtil {
 	fun formatHeroName(name: String): String {

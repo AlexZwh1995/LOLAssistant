@@ -20,6 +20,11 @@ import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import kotlin.concurrent.thread
 
+/**
+ * User: zhongweihuan
+ * Date: 2019/1/1
+ * Description: 英雄详情界面
+ */
 class HeroActivity : AppCompatActivity() {
 	val msg_finish = 0
 	val mAdapter: HeroRuneAdapter = HeroRuneAdapter(null)

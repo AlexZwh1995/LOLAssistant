@@ -4,11 +4,10 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
 
-
 /**
  * User: zhongweihuan
- * Date: 2018/3/26
- * Description: Dialog工具类
+ * Date: 2019/1/1
+ * Description: 提示框工具类
  */
 class DialogUtil(context: Context) {
 	private var progressDialog: MaterialDialog = MaterialDialog.Builder(context)

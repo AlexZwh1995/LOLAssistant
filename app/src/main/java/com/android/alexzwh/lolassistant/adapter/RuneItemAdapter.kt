@@ -8,11 +8,10 @@ import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 
-
 /**
  * User: zhongweihuan
- * Date: 2018/9/12
- * Description:
+ * Date: 2019/1/1
+ * Description: 英雄符文项适配器
  */
 class RuneItemAdapter(data: MutableList<Rune>?) : BaseQuickAdapter<Rune, BaseViewHolder>(R.layout.item_rune, data) {
 	override fun convert(helper: BaseViewHolder, item: Rune) {
