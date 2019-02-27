@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import com.android.alexzwh.lolassistant.DialogUtil
 import com.android.alexzwh.lolassistant.R
@@ -44,6 +45,9 @@ class HeroActivity : AppCompatActivity() {
 
 		mHero = intent.getSerializableExtra("hero") as Hero
 		supportActionBar?.title = mHero.nickname
+
+		hero_rune_rv.adapter = mAdapter
+		hero_rune_rv.layoutManager = LinearLayoutManager(this)
 
 		mDialogUtil = DialogUtil(this)
 		mDialogUtil.showProgressDialog()
