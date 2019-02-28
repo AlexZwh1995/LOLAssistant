@@ -1,4 +1,4 @@
-package com.android.alexzwh.lolassistant
+package com.android.alexzwh.lolassistant.base
 
 import android.app.Application
 import com.blankj.utilcode.util.Utils

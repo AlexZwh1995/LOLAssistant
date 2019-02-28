@@ -1,16 +1,14 @@
 package com.android.alexzwh.lolassistant.activity
 
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.widget.SearchView.OnQueryTextListener
 import com.android.alexzwh.lolassistant.CommonUtil
-import com.android.alexzwh.lolassistant.DialogUtil
 import com.android.alexzwh.lolassistant.R
 import com.android.alexzwh.lolassistant.adapter.MainHeroAdapter
+import com.android.alexzwh.lolassistant.base.BaseActivity
 import com.android.alexzwh.lolassistant.model.Hero
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
@@ -27,18 +25,14 @@ import kotlin.concurrent.thread
  * Date: 2019/1/1
  * Description: 主界面（英雄列表）
  */
-class MainActivity : AppCompatActivity() {
-	private val msg_finish = 0
+class MainActivity : BaseActivity() {
+	val msg_finish = 0
 	val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
-	lateinit var mDialogUtil: DialogUtil
 	lateinit var mElements: Elements
 	private val mAllHeroList = mutableListOf<Hero>()
 	private val mFilterHeroList = mutableListOf<Hero>()
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
-
+	override fun initView() {
 		initRv()
 		initSearchView()
 		// 注册键盘变化事件，隐藏键盘时清除搜索栏焦点
@@ -47,14 +41,14 @@ class MainActivity : AppCompatActivity() {
 				main_searchView.clearFocus()
 			}
 		}
-		mDialogUtil = DialogUtil(this)
+	}
 
+	override fun initData() {
 		mDialogUtil.showProgressDialog()
 		thread {
 			mElements = Jsoup.connect("https://www.op.gg/champion/statistics")
 					.header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
 					.header("Content-Type", "application/json;charset=UTF-8")
-					.header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
 					.get()
 					.select("div.champion-index__champion-list")
 					.select("div[data-champion-key]")
@@ -62,11 +56,16 @@ class MainActivity : AppCompatActivity() {
 		}
 	}
 
+	override fun getLayoutId(): Int = R.layout.activity_main
+
 	override fun onDestroy() {
 		super.onDestroy()
 		KeyboardUtils.unregisterSoftInputChangedListener(this)
 	}
 
+	/**
+	 * 数据获取完成后处理的Handler
+	 */
 	private val mHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message) {
 			if (msg.what == msg_finish) {
@@ -80,16 +79,9 @@ class MainActivity : AppCompatActivity() {
 				LogUtils.i("英雄总数：" + mElements.size)
 				// 根据英雄中文名排序
 				Collections.sort(mAllHeroList, object : Comparator<Hero> {
-					val collator = Collator.getInstance(java.util.Locale.CHINA)
 					override fun compare(o1: Hero, o2: Hero): Int {
-						val compareValue = collator.compare(o1.nickname, o2.nickname)
-						if (compareValue > 0) {
-							return 1
-						}
-						if (compareValue < 0) {
-							return -1
-						}
-						return 0
+						val collator = Collator.getInstance(java.util.Locale.CHINA)
+						return collator.compare(o1.nickname, o2.nickname)
 					}
 				})
 				mAdapter.setNewData(mAllHeroList)
@@ -97,7 +89,9 @@ class MainActivity : AppCompatActivity() {
 		}
 	}
 
-	// 根据关键字过滤英雄
+	/**
+	 * 根据关键字过滤英雄
+	 */
 	private fun filterHero(keyword: String?) {
 		if (keyword.isNullOrEmpty()) {
 			mAdapter.setNewData(mAllHeroList)
@@ -112,7 +106,9 @@ class MainActivity : AppCompatActivity() {
 		mAdapter.setNewData(mFilterHeroList)
 	}
 
-	// 初始化搜索栏
+	/**
+	 * 初始化搜索栏
+	 */
 	private fun initSearchView() {
 		main_searchView.setOnQueryTextListener(object : OnQueryTextListener {
 			override fun onQueryTextSubmit(query: String?): Boolean {
@@ -127,16 +123,22 @@ class MainActivity : AppCompatActivity() {
 		})
 	}
 
+	/**
+	 * 初始化RecyclerView
+	 */
 	private fun initRv() {
-		main_hero_rv.layoutManager = GridLayoutManager(this, 4)
-		main_hero_rv.adapter = mAdapter
-		mAdapter.setOnItemClickListener { adapter, view, position ->
-			val hero = mAdapter.getItem(position)
-			if (hero!!.positions.isNotEmpty()) {
-				HeroActivity.newIntent(hero)
-			} else {
-				ToastUtils.showShort("暂无英雄数据")
+		main_hero_rv.apply {
+			layoutManager = GridLayoutManager(this@MainActivity, 4)
+			adapter = mAdapter
+			mAdapter.setOnItemClickListener { _, _, position ->
+				val hero = mAdapter.getItem(position)
+				if (hero!!.positions.isNotEmpty()) {
+					HeroActivity.newIntent(hero)
+				} else {
+					ToastUtils.showShort("暂无英雄数据")
+				}
 			}
 		}
+
 	}
 }
