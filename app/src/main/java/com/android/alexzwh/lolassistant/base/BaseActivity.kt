@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.android.alexzwh.lolassistant.DialogUtil
+import com.blankj.utilcode.util.ActivityUtils
 
 /**
  * User: zhongweihuan
@@ -59,11 +60,16 @@ abstract class BaseActivity : AppCompatActivity() {
 		initView()
 	}
 
+	override fun onDestroy() {
+		mDialogUtil.dismissProgressDialog()
+		super.onDestroy()
+	}
+
 	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 		when (item?.itemId) {
 			// 返回键结束当前Activity
 			android.R.id.home -> {
-				finish()
+				ActivityUtils.finishActivity(this)
 				return true
 			}
 		}
