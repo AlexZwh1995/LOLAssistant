@@ -32,7 +32,7 @@ abstract class BaseActivity : AppCompatActivity() {
 	 * 左上角返回键（默认启用）
 	 * @return true 启用 false 禁用
 	 */
-	protected fun enableBack(): Boolean = true
+	protected open fun enableBack(): Boolean = true
 
 	/**
 	 * 返回layout id
