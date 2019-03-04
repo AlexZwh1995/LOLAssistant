@@ -6,16 +6,17 @@ import android.os.Looper
 import android.os.Message
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import com.android.alexzwh.lolassistant.JsoupUtil
 import com.android.alexzwh.lolassistant.R
 import com.android.alexzwh.lolassistant.adapter.HeroRuneAdapter
 import com.android.alexzwh.lolassistant.base.BaseActivity
 import com.android.alexzwh.lolassistant.model.Hero
 import com.android.alexzwh.lolassistant.model.Rune
-import com.android.alexzwh.lolassistant.model.RunesDetail
+import com.android.alexzwh.lolassistant.model.RunesPage
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.LogUtils
 import kotlinx.android.synthetic.main.activity_hero.*
-import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import kotlin.concurrent.thread
 
@@ -29,7 +30,8 @@ class HeroActivity : BaseActivity() {
 	val mAdapter: HeroRuneAdapter = HeroRuneAdapter(null)
 	lateinit var mHero: Hero
 	lateinit var mElements: Elements
-	private val mPositionRuneMap = mutableMapOf<String, MutableList<RunesDetail>>()
+	lateinit var mDocument: Document
+	private val mPositionRuneMap = mutableMapOf<String, MutableList<RunesPage>>()
 
 	companion object {
 		fun newIntent(hero: Hero) {
@@ -52,12 +54,7 @@ class HeroActivity : BaseActivity() {
 		supportActionBar?.title = mHero.nickname
 
 		thread {
-			mElements = Jsoup.connect("https://www.op.gg/champion/${mHero.name.toLowerCase()}/statistics/${mHero.positions[0]}")
-					.header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
-					.header("Content-Type", "application/json;charset=UTF-8")
-					.get()
-					.select("tbody.tabItem")
-					.select("tr")
+			mDocument = JsoupUtil.get("https://www.op.gg/champion/${mHero.name.toLowerCase()}/statistics/${mHero.positions[0]}")
 			mHandler.sendEmptyMessage(msg_finish)
 		}
 	}
@@ -72,6 +69,8 @@ class HeroActivity : BaseActivity() {
 	private val mHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message) {
 			if (msg.what == msg_finish) {
+				mElements = mDocument.select("tbody.tabItem")
+						.select("tr")
 				mDialogUtil.dismissProgressDialog()
 				mElements.forEach { element ->
 					// 胜率
@@ -88,10 +87,10 @@ class HeroActivity : BaseActivity() {
 						} else {
 							mainElements[i].attr("src").substring(44, 48)
 						}
-						mainList.add(Rune(active,
+						mainList.add(Rune(mainElements[i].attr("alt"),
 								imgId,
 								mainElements[i].attr("title").replace(Regex("<.+?>"), ""),
-								mainElements[i].attr("alt")))
+								active))
 					}
 					// 副符文
 					val secondaryList = mutableListOf<Rune>()
@@ -103,13 +102,14 @@ class HeroActivity : BaseActivity() {
 						} else {
 							secondaryElements[i].attr("src").substring(44, 48)
 						}
-						secondaryList.add(Rune(active,
+						secondaryList.add(Rune(secondaryElements[i].attr("alt"),
 								imgId,
 								secondaryElements[i].attr("title").replace(Regex("<.+?>"), ""),
-								secondaryElements[i].attr("alt")))
+								active
+						))
 					}
-					LogUtils.i(RunesDetail(winRate, debutRate, mainList, secondaryList))
-					mAdapter.addData(RunesDetail(winRate, debutRate, mainList, secondaryList))
+					LogUtils.i(RunesPage(winRate, debutRate, mainList, secondaryList))
+					mAdapter.addData(RunesPage(winRate, debutRate, mainList, secondaryList))
 				}
 			}
 		}

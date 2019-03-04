@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -43,23 +45,27 @@ dependencies {
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0-alpha02'
 
+    //Room
+    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
+    kapt 'androidx.room:room-compiler:2.1.0-alpha04'
+
     //工具类依赖
     implementation 'com.blankj:utilcode:1.20.0'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
 
-    //Glide依赖
+    //Glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    kapt 'com.github.bumptech.glide:compiler:4.8.0'
 
-    //RxJava依赖
+    //RxJava
 //    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
 //    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
-    //Jsoup依赖
+    //Jsoup
     implementation 'org.jsoup:jsoup:1.11.3'
 
-    //Retrofit依赖
+    //Retrofit
 //    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 //    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 //    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'

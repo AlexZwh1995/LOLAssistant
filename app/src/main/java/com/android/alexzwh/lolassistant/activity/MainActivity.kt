@@ -6,6 +6,7 @@ import android.os.Message
 import android.support.v7.widget.GridLayoutManager
 import android.widget.SearchView.OnQueryTextListener
 import com.android.alexzwh.lolassistant.CommonUtil
+import com.android.alexzwh.lolassistant.JsoupUtil
 import com.android.alexzwh.lolassistant.R
 import com.android.alexzwh.lolassistant.adapter.MainHeroAdapter
 import com.android.alexzwh.lolassistant.base.BaseActivity
@@ -14,8 +15,7 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jsoup.Jsoup
-import org.jsoup.select.Elements
+import org.jsoup.nodes.Document
 import java.text.Collator
 import java.util.*
 import kotlin.concurrent.thread
@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
 class MainActivity : BaseActivity() {
 	val msg_finish = 0
 	val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
-	lateinit var mElements: Elements
+	lateinit var mDocument: Document
 	private val mAllHeroList = mutableListOf<Hero>()
 	private val mFilterHeroList = mutableListOf<Hero>()
 
@@ -46,17 +46,14 @@ class MainActivity : BaseActivity() {
 	override fun initData() {
 		mDialogUtil.showProgressDialog()
 		thread {
-			mElements = Jsoup.connect("https://www.op.gg/champion/statistics")
-					.header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
-					.header("Content-Type", "application/json;charset=UTF-8")
-					.get()
-					.select("div.champion-index__champion-list")
-					.select("div[data-champion-key]")
+			mDocument = JsoupUtil.get("https://www.op.gg/champion/statistics")
 			mHandler.sendEmptyMessage(msg_finish)
 		}
 	}
 
 	override fun getLayoutId(): Int = R.layout.activity_main
+
+	override fun enableBack(): Boolean = false
 
 	override fun onDestroy() {
 		super.onDestroy()
@@ -69,14 +66,16 @@ class MainActivity : BaseActivity() {
 	private val mHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message) {
 			if (msg.what == msg_finish) {
+				val elements = mDocument.select("div.champion-index__champion-list")
+						.select("div[data-champion-key]")
 				mDialogUtil.dismissProgressDialog()
-				mElements.forEach { element ->
+				elements.forEach { element ->
 					val name = element.attr("data-champion-key")
 					val nickname = element.attr("data-champion-name")
 					val positions = CommonUtil.formatHeroPositions(element.select("span"))
 					mAllHeroList.add(Hero(name, nickname, positions))
 				}
-				LogUtils.i("英雄总数：" + mElements.size)
+				LogUtils.i("英雄总数：" + elements.size)
 				// 根据英雄中文名排序
 				Collections.sort(mAllHeroList, object : Comparator<Hero> {
 					override fun compare(o1: Hero, o2: Hero): Int {
