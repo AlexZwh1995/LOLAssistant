@@ -1,9 +1,9 @@
 package com.android.alexzwh.lolassistant.adapter
 
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.widget.ImageView
 import com.android.alexzwh.lolassistant.R
-import com.android.alexzwh.lolassistant.model.Rune
+import com.android.alexzwh.lolassistant.database.model.Rune
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder

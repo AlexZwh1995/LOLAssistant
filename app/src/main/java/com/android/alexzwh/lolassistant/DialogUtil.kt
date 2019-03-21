@@ -1,7 +1,7 @@
 package com.android.alexzwh.lolassistant
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import java.lang.ref.WeakReference
 
