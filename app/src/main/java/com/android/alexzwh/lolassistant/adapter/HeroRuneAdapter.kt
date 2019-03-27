@@ -1,9 +1,9 @@
 package com.android.alexzwh.lolassistant.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.alexzwh.lolassistant.R
-import com.android.alexzwh.lolassistant.model.RunesDetail
+import com.android.alexzwh.lolassistant.database.model.RunesPage
 import com.blankj.utilcode.util.ToastUtils
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseQuickAdapter.OnItemChildClickListener
@@ -14,15 +14,18 @@ import com.chad.library.adapter.base.BaseViewHolder
  * Date: 2019/1/1
  * Description: 英雄符文页适配器
  */
-class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesDetail, BaseViewHolder>(R.layout.item_hero_rune, data) {
-	override fun convert(helper: BaseViewHolder, item: RunesDetail) {
+class HeroRuneAdapter(data: MutableList<RunesPage>?) : BaseQuickAdapter<RunesPage, BaseViewHolder>(R.layout.item_hero_rune, data) {
+	override fun convert(helper: BaseViewHolder, item: RunesPage) {
 		helper.setText(R.id.debut_rate_tv, "登场率：" + item.debutRate)
 				.setText(R.id.win_rate_tv, "胜率：" + item.winRate)
 		// 主符文
 		val mainRv = helper.getView<RecyclerView>(R.id.main_rune_rv)
 		val mainAdapter = RuneItemAdapter(item.mainList)
 		mainAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
-			ToastUtils.showLong(item.mainList!![position].description.replace("%", "%%"))
+			val description = item.mainList!![position].description?.replace("%", "%%")
+			val name = item.mainList!![position].name
+			// 用：分隔名称和描述
+			ToastUtils.showLong(description?.replace(name!!, "$name："))
 		}
 		mainRv.adapter = mainAdapter
 		val mainLayoutManager = GridLayoutManager(mContext, 12)
@@ -61,7 +64,7 @@ class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesD
 		val secondaryRv = helper.getView<RecyclerView>(R.id.secondary_rune_rv)
 		val secondaryAdapter = RuneItemAdapter(item.secondaryList)
 		secondaryAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
-			ToastUtils.showShort(item.secondaryList!![position].description.replace("%", "%%"))
+			ToastUtils.showLong(item.secondaryList!![position].description?.replace("%", "%%"))
 		}
 		secondaryRv.adapter = secondaryAdapter
 		val secondaryLayoutManager = GridLayoutManager(mContext, 12)
@@ -88,5 +91,14 @@ class HeroRuneAdapter(data: MutableList<RunesDetail>?) : BaseQuickAdapter<RunesD
 			}
 		}
 		secondaryRv.layoutManager = secondaryLayoutManager
+		// 自适应符文
+		val adaptiveRv = helper.getView<RecyclerView>(R.id.adaptive_rune_rv)
+		val adaptiveAdapter = RuneItemAdapter(item.adaptiveList)
+		adaptiveAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
+			ToastUtils.showLong(item.adaptiveList!![position].description?.replace("%", "%%"))
+		}
+		adaptiveRv.adapter = adaptiveAdapter
+		val adaptiveLayoutManager = GridLayoutManager(mContext, 1)
+		adaptiveRv.layoutManager = adaptiveLayoutManager
 	}
 }

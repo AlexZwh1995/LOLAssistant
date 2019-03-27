@@ -3,14 +3,14 @@ package com.android.alexzwh.lolassistant.activity
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.support.v7.widget.GridLayoutManager
 import android.widget.SearchView.OnQueryTextListener
-import com.android.alexzwh.lolassistant.CommonUtil
-import com.android.alexzwh.lolassistant.JsoupUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import com.android.alexzwh.lolassistant.R
 import com.android.alexzwh.lolassistant.adapter.MainHeroAdapter
 import com.android.alexzwh.lolassistant.base.BaseActivity
-import com.android.alexzwh.lolassistant.model.Hero
+import com.android.alexzwh.lolassistant.database.model.Hero
+import com.android.alexzwh.lolassistant.util.CommonUtil
+import com.android.alexzwh.lolassistant.util.JsoupUtil
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -29,8 +29,8 @@ class MainActivity : BaseActivity() {
 	val msg_finish = 0
 	val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
 	lateinit var mDocument: Document
-	private val mAllHeroList = mutableListOf<Hero>()
-	private val mFilterHeroList = mutableListOf<Hero>()
+	private val mAllHeroList = arrayListOf<Hero>()
+	private val mFilterHeroList = arrayListOf<Hero>()
 
 	override fun initView() {
 		initRv()
@@ -73,7 +73,10 @@ class MainActivity : BaseActivity() {
 					val name = element.attr("data-champion-key")
 					val nickname = element.attr("data-champion-name")
 					val positions = CommonUtil.formatHeroPositions(element.select("span"))
-					mAllHeroList.add(Hero(name, nickname, positions))
+					mAllHeroList.add(Hero(
+							name = name,
+							nickname = nickname,
+							positions = positions))
 				}
 				LogUtils.i("英雄总数：" + elements.size)
 				// 根据英雄中文名排序
@@ -98,7 +101,7 @@ class MainActivity : BaseActivity() {
 		}
 		mFilterHeroList.clear()
 		mAllHeroList.forEach {
-			if (it.nickname.contains(keyword)) {
+			if (it.nickname?.contains(keyword)!!) {
 				mFilterHeroList.add(it)
 			}
 		}
@@ -131,7 +134,7 @@ class MainActivity : BaseActivity() {
 			adapter = mAdapter
 			mAdapter.setOnItemClickListener { _, _, position ->
 				val hero = mAdapter.getItem(position)
-				if (hero!!.positions.isNotEmpty()) {
+				if (hero!!.positions?.isNotEmpty()!!) {
 					HeroActivity.newIntent(hero)
 				} else {
 					ToastUtils.showShort("暂无英雄数据")
