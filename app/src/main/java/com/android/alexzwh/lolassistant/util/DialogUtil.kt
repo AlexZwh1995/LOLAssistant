@@ -1,8 +1,9 @@
-package com.android.alexzwh.lolassistant
+package com.android.alexzwh.lolassistant.util
 
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
+import com.android.alexzwh.lolassistant.R.color
 import java.lang.ref.WeakReference
 
 /**
@@ -19,7 +20,7 @@ class DialogUtil(context: Context) {
 			MaterialDialog.Builder(mWeakReference.get()!!)
 					.progress(true, 0)
 					.content("正在从op.gg查询数据...")
-					.widgetColor(ContextCompat.getColor(context, R.color.colorPrimary))
+					.widgetColor(ContextCompat.getColor(context, color.colorPrimary))
 					.canceledOnTouchOutside(false)
 					.build()
 

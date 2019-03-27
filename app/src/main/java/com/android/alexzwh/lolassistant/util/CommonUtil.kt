@@ -1,4 +1,4 @@
-package com.android.alexzwh.lolassistant
+package com.android.alexzwh.lolassistant.util
 
 import com.blankj.utilcode.util.StringUtils
 import org.jsoup.nodes.Element
@@ -27,8 +27,8 @@ object CommonUtil {
 		}
 	}
 
-	fun formatHeroPositions(positions: MutableList<Element>): MutableList<String> {
-		val result = mutableListOf<String>()
+	fun formatHeroPositions(positions: MutableList<Element>): ArrayList<String> {
+		val result = arrayListOf<String>()
 		positions.toMutableList().forEach {
 			when (it.text()) {
 				"上单" -> result.add("top")
