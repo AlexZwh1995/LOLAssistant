@@ -1,8 +1,11 @@
 package com.android.alexzwh.lolassistant.adapter
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.widget.ImageView
 import com.android.alexzwh.lolassistant.R
 import com.android.alexzwh.lolassistant.database.model.Rune
+import com.blankj.utilcode.util.ImageUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
@@ -21,14 +24,17 @@ class RuneItemAdapter(data: MutableList<Rune>?) : BaseQuickAdapter<Rune, BaseVie
 		val layoutParams = runeIv.layoutParams
 		runeIv.layoutParams = layoutParams
 		val resId: Int
+		val bitmap: Bitmap
 		if (item.active) {
 			resId = mContext.resources.getIdentifier("rune_" + item.imgId, "drawable", mContext.packageName)
-//			rune.setBackgroundColor(ContextCompat.getColor(mContext, R.color.color_gray))
+			bitmap = ImageUtils.addCircleBorder(ImageUtils.drawable2Bitmap(mContext.resources.getDrawable(resId, null)), 2, Color.BLUE)
 		} else {
 			resId = mContext.resources.getIdentifier("rune_" + item.imgId + "_gray", "drawable", mContext.packageName)
+			bitmap = ImageUtils.drawable2Bitmap(mContext.resources.getDrawable(resId, null))
 		}
+
 		Glide.with(mContext)
-				.load(resId)
+				.load(bitmap)
 				.apply(RequestOptions.bitmapTransform(CircleCrop()))
 				.into(runeIv)
 	}

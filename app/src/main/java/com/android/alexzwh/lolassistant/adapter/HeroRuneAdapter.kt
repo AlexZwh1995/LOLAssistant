@@ -18,15 +18,20 @@ class HeroRuneAdapter(data: MutableList<RunesPage>?) : BaseQuickAdapter<RunesPag
 	override fun convert(helper: BaseViewHolder, item: RunesPage) {
 		helper.setText(R.id.debut_rate_tv, "登场率：" + item.debutRate)
 				.setText(R.id.win_rate_tv, "胜率：" + item.winRate)
-		// 主符文
-		val mainRv = helper.getView<RecyclerView>(R.id.main_rune_rv)
-		val mainAdapter = RuneItemAdapter(item.mainList)
-		mainAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
+
+		val onItemChildClickListener = OnItemChildClickListener { _, _, position ->
+			if (position == 0) {
+				return@OnItemChildClickListener
+			}
 			val description = item.mainList!![position].description?.replace("%", "%%")
 			val name = item.mainList!![position].name
 			// 用：分隔名称和描述
 			ToastUtils.showLong(description?.replace(name!!, "$name："))
 		}
+		// 主符文
+		val mainRv = helper.getView<RecyclerView>(R.id.main_rune_rv)
+		val mainAdapter = RuneItemAdapter(item.mainList)
+		mainAdapter.onItemChildClickListener = onItemChildClickListener
 		mainRv.adapter = mainAdapter
 		val mainLayoutManager = GridLayoutManager(mContext, 12)
 		mainLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -63,9 +68,7 @@ class HeroRuneAdapter(data: MutableList<RunesPage>?) : BaseQuickAdapter<RunesPag
 		// 副符文
 		val secondaryRv = helper.getView<RecyclerView>(R.id.secondary_rune_rv)
 		val secondaryAdapter = RuneItemAdapter(item.secondaryList)
-		secondaryAdapter.onItemChildClickListener = OnItemChildClickListener { _, _, position ->
-			ToastUtils.showLong(item.secondaryList!![position].description?.replace("%", "%%"))
-		}
+		secondaryAdapter.onItemChildClickListener = onItemChildClickListener
 		secondaryRv.adapter = secondaryAdapter
 		val secondaryLayoutManager = GridLayoutManager(mContext, 12)
 		secondaryLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
