@@ -39,7 +39,7 @@
 		android:layout_height="wrap_content"
 		android:layout_marginTop="2dp"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@id/secondary_rune_rv"
+		app:layout_constraintEnd_toStartOf="@id/line_1"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/win_rate_tv" />
 
@@ -48,17 +48,42 @@
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="2dp"
-		app:layout_constraintEnd_toStartOf="@id/adaptive_rune_rv"
-		app:layout_constraintStart_toEndOf="@id/main_rune_rv"
-		app:layout_constraintTop_toBottomOf="@id/win_rate_tv" />
+		app:layout_constraintEnd_toStartOf="@id/line_2"
+		app:layout_constraintStart_toEndOf="@id/line_1"
+		app:layout_constraintTop_toTopOf="@id/main_rune_rv" />
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/adaptive_rune_rv"
-		android:layout_width="30dp"
+		android:layout_width="20dp"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="2dp"
+		android:layout_marginEnd="2dp"
 		app:layout_constraintBottom_toBottomOf="@id/main_rune_rv"
 		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@id/line_2"
+		app:layout_constraintTop_toTopOf="@id/main_rune_rv" />
+
+	<View
+		android:id="@+id/line_1"
+		android:layout_width="1dp"
+		android:layout_height="0dp"
+		android:layout_marginStart="2dp"
+		android:layout_marginEnd="2dp"
+		android:background="@color/color_gray"
+		app:layout_constraintBottom_toBottomOf="@id/main_rune_rv"
+		app:layout_constraintEnd_toStartOf="@id/secondary_rune_rv"
+		app:layout_constraintStart_toEndOf="@id/main_rune_rv"
+		app:layout_constraintTop_toTopOf="@id/main_rune_rv" />
+
+	<View
+		android:id="@+id/line_2"
+		android:layout_width="1dp"
+		android:layout_height="0dp"
+		android:layout_marginStart="2dp"
+		android:layout_marginEnd="2dp"
+		android:background="@color/color_gray"
+		app:layout_constraintBottom_toBottomOf="@id/main_rune_rv"
+		app:layout_constraintEnd_toStartOf="@id/adaptive_rune_rv"
 		app:layout_constraintStart_toEndOf="@id/secondary_rune_rv"
 		app:layout_constraintTop_toTopOf="@id/main_rune_rv" />
 </androidx.constraintlayout.widget.ConstraintLayout>

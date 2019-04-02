@@ -22,6 +22,7 @@ class MainHeroAdapter(data: MutableList<Hero>?) : BaseQuickAdapter<Hero, BaseVie
 		Glide.with(mContext)
 				.load(resId)
 				.apply(RequestOptions.bitmapTransform(CircleCrop()))
+				.apply(RequestOptions.overrideOf(headIv.width))
 				.into(headIv)
 	}
 }

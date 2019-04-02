@@ -36,6 +36,7 @@ class RuneItemAdapter(data: MutableList<Rune>?) : BaseQuickAdapter<Rune, BaseVie
 		Glide.with(mContext)
 				.load(bitmap)
 				.apply(RequestOptions.bitmapTransform(CircleCrop()))
+				.apply(RequestOptions.overrideOf(runeIv.width))
 				.into(runeIv)
 	}
 }
