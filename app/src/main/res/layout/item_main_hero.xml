@@ -10,7 +10,7 @@
 	<ImageView
 		android:id="@+id/item_main_hero_head_iv"
 		android:layout_width="match_parent"
-		android:layout_height="80dp"
+		android:layout_height="60dp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
