@@ -10,6 +10,7 @@ import com.android.alexzwh.lolassistant.adapter.MainHeroAdapter
 import com.android.alexzwh.lolassistant.base.BaseActivity
 import com.android.alexzwh.lolassistant.database.model.Hero
 import com.android.alexzwh.lolassistant.util.CommonUtil
+import com.android.alexzwh.lolassistant.util.Constant
 import com.android.alexzwh.lolassistant.util.JsoupUtil
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
@@ -26,8 +27,7 @@ import kotlin.concurrent.thread
  * Description: 主界面（英雄列表）
  */
 class MainActivity : BaseActivity() {
-	val msg_finish = 0
-	val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
+	private val mAdapter: MainHeroAdapter = MainHeroAdapter(null)
 	lateinit var mDocument: Document
 	private val mAllHeroList = arrayListOf<Hero>()
 	private val mFilterHeroList = arrayListOf<Hero>()
@@ -47,7 +47,7 @@ class MainActivity : BaseActivity() {
 		mDialogUtil.showProgressDialog()
 		thread {
 			mDocument = JsoupUtil.get("https://www.op.gg/champion/statistics")
-			mHandler.sendEmptyMessage(msg_finish)
+			mHandler.sendEmptyMessage(Constant.MSG_JSOUP_FINISH)
 		}
 	}
 
@@ -65,7 +65,8 @@ class MainActivity : BaseActivity() {
 	 */
 	private val mHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message) {
-			if (msg.what == msg_finish) {
+			if (msg.what == Constant.MSG_JSOUP_FINISH) {
+				// 筛选英雄列表元素
 				val elements = mDocument.select("div.champion-index__champion-list")
 						.select("div[data-champion-key]")
 				mDialogUtil.dismissProgressDialog()

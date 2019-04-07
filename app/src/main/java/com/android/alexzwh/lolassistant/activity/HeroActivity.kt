@@ -12,10 +12,12 @@ import com.android.alexzwh.lolassistant.base.BaseActivity
 import com.android.alexzwh.lolassistant.database.model.Hero
 import com.android.alexzwh.lolassistant.database.model.Rune
 import com.android.alexzwh.lolassistant.database.model.RunesPage
+import com.android.alexzwh.lolassistant.util.Constant
 import com.android.alexzwh.lolassistant.util.JsoupUtil
 import com.blankj.utilcode.util.ActivityUtils
 import kotlinx.android.synthetic.main.activity_hero.*
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import kotlin.concurrent.thread
 
@@ -25,12 +27,14 @@ import kotlin.concurrent.thread
  * Description: 英雄详情界面
  */
 class HeroActivity : BaseActivity() {
-	val msg_finish = 0
-	val mAdapter: HeroRuneAdapter = HeroRuneAdapter(null)
+	private val mAdapter: HeroRuneAdapter = HeroRuneAdapter(null)
 	lateinit var mHero: Hero
-	lateinit var mElements: Elements
 	lateinit var mDocument: Document
-	private val mPositionRuneMap = mutableMapOf<String, MutableList<RunesPage>>()
+	/**
+	 * 符文元素
+	 */
+	lateinit var mRuneElements: Elements
+	private val mPositionRunePageList = mutableListOf<RunesPage>()
 
 	companion object {
 		fun newIntent(hero: Hero) {
@@ -54,7 +58,7 @@ class HeroActivity : BaseActivity() {
 
 		thread {
 			mDocument = JsoupUtil.get("https://www.op.gg/champion/${mHero.name?.toLowerCase()}/statistics/${mHero.positions?.get(0)}")
-			mHandler.sendEmptyMessage(msg_finish)
+			mHandler.sendEmptyMessage(Constant.MSG_JSOUP_FINISH)
 		}
 	}
 
@@ -67,68 +71,77 @@ class HeroActivity : BaseActivity() {
 	 */
 	private val mHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message) {
-			if (msg.what == msg_finish) {
-				mElements = mDocument.select("tbody.tabItem")
-						.select("tr")
-				mDialogUtil.dismissProgressDialog()
-				mElements.forEach { element ->
-					// 胜率
-					val winRate = element.select("strong")[0].text()
-					// 登场率
-					val debutRate = element.select("strong")[1].text()
-					// 主符文
-					val mainList = arrayListOf<Rune>()
-					val mainElements = element.select("div.perk-page")[0].select("img")
-					for (i in mainElements.indices) {
-						val imgId = if (i == 0) {
-							mainElements[i].attr("src").substring(49, 53)
-						} else {
-							mainElements[i].attr("src").substring(44, 48)
-						}
-						mainList.add(Rune(
-								name = mainElements[i].attr("alt"),
-								imgId = imgId,
-								description = mainElements[i].attr("title").replace(Regex("<.+?>"), ""),
-								active = !mainElements[i].attr("src").contains("e_grayscale")))
-					}
-					// 副符文
-					val secondaryList = arrayListOf<Rune>()
-					val secondaryElements = element.select("div.perk-page")[1].select("img")
-					for (i in secondaryElements.indices) {
-						val imgId = if (i == 0) {
-							secondaryElements[i].attr("src").substring(49, 53)
-						} else {
-							secondaryElements[i].attr("src").substring(44, 48)
-						}
-						secondaryList.add(Rune(
-								name = secondaryElements[i].attr("alt"),
-								imgId = imgId,
-								description = secondaryElements[i].attr("title").replace(Regex("<.+?>"), ""),
-								active = !secondaryElements[i].attr("src").contains("e_grayscale")))
-					}
-					// 自适应符文
-					val adaptiveList = arrayListOf<Rune>()
-					val adaptiveElements = element.select("div.fragment-page").select("img")
-					for (i in adaptiveElements.indices) {
-						val active = !adaptiveElements[i].attr("src").contains("e_grayscale")
-						if (active) {
-							val imgId = adaptiveElements[i].attr("src").substring(49, 53)
-							adaptiveList.add(Rune(
-									name = adaptiveElements[i].attr("alt"),
-									imgId = imgId,
-									description = adaptiveElements[i].attr("title").replace(Regex("<.+?>"), ""),
-									active = true))
-						}
-
-					}
-					mAdapter.addData(RunesPage(
-							winRate = winRate,
-							debutRate = debutRate,
-							mainList = mainList,
-							secondaryList = secondaryList,
-							adaptiveList = adaptiveList))
-				}
+			if (msg.what == Constant.MSG_JSOUP_FINISH) {
+				handleData()
 			}
 		}
+	}
+
+	/**
+	 * 处理获取的符文页数据
+	 */
+	private fun handleData() {
+		mRuneElements = mDocument.select("tbody.tabItem")
+				.select("tr")
+		mDialogUtil.dismissProgressDialog()
+		mRuneElements.forEach { element ->
+			// 胜率
+			val winRate = element.select("strong")[0].text()
+			// 登场率
+			val debutRate = element.select("strong")[1].text()
+			// 主符文
+			val mainList = makeRuneList(0, element)
+			// 副符文
+			val secondaryList = makeRuneList(1, element)
+			// 自适应符文
+			val adaptiveList = makeRuneList(2, element)
+
+			mAdapter.addData(RunesPage(
+					winRate = winRate,
+					debutRate = debutRate,
+					mainList = mainList,
+					secondaryList = secondaryList,
+					adaptiveList = adaptiveList))
+		}
+	}
+
+	/**
+	 * @param type 符文类型 0 主符文 1 副符文 2 自适应符文
+	 */
+	private fun makeRuneList(type: Int, element: Element): MutableList<Rune> {
+		val list = arrayListOf<Rune>()
+		val elements = when (type) {
+			0 -> element.select("div.perk-page")[0].select("img")
+			1 -> element.select("div.perk-page")[1].select("img")
+			2 -> element.select("div.fragment-page").select("img")
+			else -> null
+		} ?: return mutableListOf()
+		for (i in elements.indices) {
+			if (type == 2) {
+				val active = !elements[i].attr("src").contains("e_grayscale")
+				if (active) {
+					val imgId = elements[i].attr("src").substring(49, 53)
+					list.add(Rune(
+							name = elements[i].attr("alt"),
+							imgId = imgId,
+							description = elements[i].attr("title").replace(Regex("<.+?>"), ""),
+							active = true))
+				}
+			} else {
+				val imgId = if (i == 0) {
+					elements[i].attr("src").substring(49, 53)
+				} else {
+					elements[i].attr("src").substring(44, 48)
+				}
+				list.add(Rune(
+						name = elements[i].attr("alt"),
+						imgId = imgId,
+						description = elements[i].attr("title").replace(Regex("<.+?>"), ""),
+						active = !elements[i].attr("src").contains("e_grayscale")))
+			}
+
+		}
+
+		return list
 	}
 }
